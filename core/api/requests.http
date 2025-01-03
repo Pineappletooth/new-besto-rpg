@@ -1,0 +1,6 @@
+proto < ./commands.proto
+
+GRPC localhost:8080/Commands/Work
+{
+    "userId": "0"
+}

@@ -1,0 +1,20 @@
+syntax ="proto3";
+
+package bestorpg.commands;
+
+option go_package = " pineappletooth/bestoRpg/pkg/api/proto";
+
+
+service Commands {
+    rpc Work(WorkRequest) returns (WorkResponse) {}
+}
+
+message WorkRequest {
+    int64 userId = 1;
+}
+
+message WorkResponse {
+    int64 amount = 1;
+    int64 new_balance = 2;
+    string message = 3;
+}
