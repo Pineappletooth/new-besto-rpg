@@ -5,8 +5,10 @@ go 1.23.4
 require (
 	github.com/joho/godotenv v1.5.1
 	github.com/redis/go-redis/v9 v9.7.0
+	github.com/yuin/gopher-lua v1.1.1
 	google.golang.org/grpc v1.69.2
 	google.golang.org/protobuf v1.36.1
+	layeh.com/gopher-luar v1.0.11
 )
 
 require (
