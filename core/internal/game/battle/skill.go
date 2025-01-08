@@ -6,23 +6,38 @@ type BattleContext struct {
 	enemies []*BattleEntity
 }
 
-type RollDiceContext struct {
-	
+type onRollDiceContext struct {
+	dice []int
+	originalResult int
+	result int
 }
 
-type BattleArg struct {
 
+type onDamageContext struct {
+	damage int
+	dealer *BattleEntity
+	receiver *BattleEntity
 }
 
-type Skill struct {
+type Effect struct {
 	onBattleStart func()
 	onBeforeRound func()
-	onUse func(target BattleEntity)
-	onBeforeRollDice func()
-	onAfterRollDice func()
-	onBeforeDamage func()
-	onAfterDamage func()
+	onBeforeTurn func()
+	onBeforeRollDice func(ctx *onRollDiceContext)
+	onAfterRollDice func(ctx *onRollDiceContext)
+	onBeforeDamage func(ctx *onDamageContext)
+	onAfterDamage func(ctx *onDamageContext)
+	onAfterTurn func()
 	onAfterRound func()
 }
 
+type Skill struct {
+	name string
+	onUse func(target *BattleEntity)
+}
 
+type Status struct {
+	name string
+	priority int
+	effect *Effect
+}
