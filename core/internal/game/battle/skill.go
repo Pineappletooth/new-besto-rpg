@@ -19,6 +19,25 @@ type onChangeStatContext struct {
 	receiver *BattleEntity
 }
 
+
+type Event struct {
+	name string
+}
+
+type Context interface{
+	onDamageContext | onRollDiceContext
+}
+type Effect2[T Context] struct {
+	onBeforeEvent func(event T)
+	onEvent func(event T)
+	onAfterEvent func(event T)
+}
+
+func TriggerBeforeEvent() {
+	a := Effect2[onDamageContext]{
+		
+	}
+}
 type Effect struct {
 	onBattleStart      func()
 	onBeforeRound      func()
