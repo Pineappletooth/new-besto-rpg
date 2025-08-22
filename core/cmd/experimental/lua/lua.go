@@ -15,18 +15,12 @@ type Wrapper struct {
 }
 
 const script = `
-return {
-    Name = "10",
-    Token = function(a) return a.."qwe" end
-}
+local Name = "KK"
+a.Token = function(c) return c..Name..1 end
 `
 const script2 = `
-return {
-    Name = "10",
-}
-`
-const loader = `
-sss.UserW = aaa
+local Name = "GG"
+a.Token = function(c) return c..Name..2 end
 `
 
 func Example_basic() {
@@ -35,14 +29,12 @@ func Example_basic() {
 
 	user := getUser(L, script)
 	user2 := getUser(L, script2)
-	if user.Token != nil {
-		println(user.Token("111"))
-
-	}
+//	getUser(L, script2)
 	if user2.Token != nil {
-		println(user2.Token("444"))
-
+		println(user2.Token("xxx"))
 	}
+	println(user.Token("Hello from Lua, "))
+	
 
 	// Output:
 	// Hello from Lua, Tim!
@@ -50,18 +42,12 @@ func Example_basic() {
 }
 
 func getUser(L *lua.LState, ss string) User {
+	wrapper := &User{}
+	L.SetGlobal("a", luar.New(L, wrapper))
 	if err := L.DoString(ss); err != nil {
 		panic(err)
 	}
-	wrapper := &Wrapper{}
-	L.SetGlobal("aaa", L.Get(-1))
-	L.Pop(1)
-	L.SetGlobal("sss", luar.New(L, wrapper))
-	if err := L.DoString(loader); err != nil {
-		panic(err)
-	}
-	user := wrapper.UserW
-	return user
+	return *wrapper
 }
 func main() {
 	Example_basic()
