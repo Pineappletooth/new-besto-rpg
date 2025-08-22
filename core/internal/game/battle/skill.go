@@ -1,43 +1,43 @@
 package battle
 
 type BattleContext struct {
-	self *BattleEntity
-	allies []*BattleEntity
+	self    *BattleEntity
+	allies  []*BattleEntity
 	enemies []*BattleEntity
 }
 
 type onRollDiceContext struct {
-	dice []int
+	dice           []int
 	originalResult int
-	result int
+	result         int
 }
 
-
-type onDamageContext struct {
-	damage int
-	dealer *BattleEntity
+type onChangeStatContext struct {
+	stat     Stat
+	change   int
+	dealer   *BattleEntity
 	receiver *BattleEntity
 }
 
 type Effect struct {
-	onBattleStart func()
-	onBeforeRound func()
-	onBeforeTurn func()
-	onBeforeRollDice func(ctx *onRollDiceContext)
-	onAfterRollDice func(ctx *onRollDiceContext)
-	onBeforeDamage func(ctx *onDamageContext)
-	onAfterDamage func(ctx *onDamageContext)
-	onAfterTurn func()
-	onAfterRound func()
+	onBattleStart      func()
+	onBeforeRound      func()
+	onBeforeTurn       func()
+	onBeforeRollDice   func(ctx *onRollDiceContext)
+	onAfterRollDice    func(ctx *onRollDiceContext)
+	onBeforeStatChange func(ctx *onChangeStatContext)
+	onAfterStatChange  func(ctx *onChangeStatContext)
+	onAfterTurn        func()
+	onAfterRound       func()
 }
 
 type Skill struct {
-	name string
+	name  string
 	onUse func(target *BattleEntity)
 }
 
 type Status struct {
-	name string
+	name     string
 	priority int
-	effect *Effect
+	effect   *Effect
 }

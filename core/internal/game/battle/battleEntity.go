@@ -1,20 +1,28 @@
 package battle
 
+type Stat string
 
+const (
+	HP = "HP"
+)
+
+type Stats map[Stat]int
 
 type BattleEntity struct {
-	hp int
-	skills map[string]Skill
-	status []Status
+	stats         Stats
+	originalStats Stats
+	skills        map[string]Skill
+	status        []Status
+	chosenSkills  []string
 }
 
-func (s *BattleEntity) RollDiceT(dice DiceType) int{
+func (s *BattleEntity) RollDiceT(dice DiceType) int {
 	return s.RollDice(dices[dice])
 }
 
-func (s *BattleEntity) RollDice(dice []int) int{
+func (s *BattleEntity) RollDice(dice []int) int {
 	ctx := &onRollDiceContext{
-		dice : dice,
+		dice: dice,
 	}
 	for _, status := range s.status {
 		if status.effect.onBeforeRollDice != nil {
@@ -29,21 +37,22 @@ func (s *BattleEntity) RollDice(dice []int) int{
 	return ctx.result
 }
 
-func (s *BattleEntity) Damage(damage int, target *BattleEntity){
-	ctx := &onDamageContext{
-		damage : damage,
-		dealer : s,
+func (s *BattleEntity) Damage(damage int, target *BattleEntity) {
+	ctx := &onChangeStatContext{
+		stat:     HP,
+		change:   -damage,
+		dealer:   s,
 		receiver: target,
 	}
 	for _, status := range s.status {
-		if status.effect.onBeforeDamage != nil {
-			status.effect.onBeforeDamage(ctx)
+		if status.effect.onAfterStatChange != nil {
+			status.effect.onBeforeStatChange(ctx)
 		}
-		
-		
 
-		if status.effect.onAfterDamage != nil {
-			status.effect.onAfterDamage(ctx)
+		target.stats[HP] += ctx.change
+
+		if status.effect.onAfterStatChange != nil {
+			status.effect.onAfterStatChange(ctx)
 		}
 	}
 }
