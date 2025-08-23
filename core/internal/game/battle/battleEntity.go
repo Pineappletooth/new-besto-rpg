@@ -21,12 +21,17 @@ func (s *BattleEntity) RollDiceT(dice DiceType) int {
 }
 
 func (s *BattleEntity) RollDice(dice []int) int {
-	ctx := &onRollDiceContext{
-		dice: dice,
-	}
+	ctx := createEventContext(onRollDiceContext{
+		dice:   dice,
+		result: 0,
+	})
+	modifiedCtx := ctx.modified.(onRollDiceContext)
+
+	print(modifiedCtx.result)
+
 	for _, status := range s.status {
-		if status.effect.onBeforeRollDice != nil {
-			status.effect.onBeforeRollDice(ctx)
+		if status.effect.onAfterEvent != nil {
+			status.effect.onAfterEvent(&ctx)
 		}
 		ctx.originalResult = RollDice(ctx.dice)
 		ctx.result = ctx.originalResult

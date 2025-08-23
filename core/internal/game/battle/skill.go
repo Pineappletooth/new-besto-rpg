@@ -6,10 +6,26 @@ type BattleContext struct {
 	enemies []*BattleEntity
 }
 
+type Event string
+
+const (
+	battleStart = "battleStart"
+	battleEnd   = "battleEnd"
+	roundStart  = "roundStart"
+	roundEnd    = "roundEnd"
+	turnStart   = "turnStart"
+	turnEnd     = "turnEnd"
+	rollDice    = "rollDice"
+	changeStat  = "changeStat"
+)
+
 type onRollDiceContext struct {
-	dice           []int
-	originalResult int
-	result         int
+	dice   []int
+	result int
+}
+
+func (on onRollDiceContext) getEvent() Event {
+	return rollDice
 }
 
 type onChangeStatContext struct {
@@ -19,35 +35,30 @@ type onChangeStatContext struct {
 	receiver *BattleEntity
 }
 
-
-type Event struct {
-	name string
+func (on *onChangeStatContext) getEvent() Event {
+	return changeStat
 }
 
-type Context interface{
-	onDamageContext | onRollDiceContext
-}
-type Effect2[T Context] struct {
-	onBeforeEvent func(event T)
-	onEvent func(event T)
-	onAfterEvent func(event T)
-}
-
-func TriggerBeforeEvent() {
-	a := Effect2[onDamageContext]{
-		
+func createEventContext[T Context](ctx T) EventContext[Context] {
+	return EventContext[Context]{
+		original: ctx,
+		modified: ctx,
 	}
 }
-type Effect struct {
-	onBattleStart      func()
-	onBeforeRound      func()
-	onBeforeTurn       func()
-	onBeforeRollDice   func(ctx *onRollDiceContext)
-	onAfterRollDice    func(ctx *onRollDiceContext)
-	onBeforeStatChange func(ctx *onChangeStatContext)
-	onAfterStatChange  func(ctx *onChangeStatContext)
-	onAfterTurn        func()
-	onAfterRound       func()
+
+type Context interface {
+	getEvent() Event
+}
+
+type EventContext[T Context] struct {
+	original T
+	modified T
+}
+
+type Effect[T Context] struct {
+	onBeforeEvent func(ctx *EventContext[T])
+	onEvent       func(ctx *EventContext[T])
+	onAfterEvent  func(ctx *EventContext[T])
 }
 
 type Skill struct {
@@ -58,5 +69,5 @@ type Skill struct {
 type Status struct {
 	name     string
 	priority int
-	effect   *Effect
+	effect   *Effect[Context]
 }
