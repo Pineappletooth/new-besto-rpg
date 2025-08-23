@@ -14,32 +14,19 @@ type BattleEntity struct {
 	skills        map[string]Skill
 	status        []Status
 	chosenSkills  []string
+	rollDiceEvent Event[onRollDiceContext]
 }
 
-func (s *BattleEntity) RollDiceT(dice DiceType) int {
-	return s.RollDice(dices[dice])
-}
-
-func (s *BattleEntity) RollDice(dice []int) int {
-	ctx := createEventContext(onRollDiceContext{
-		dice:   dice,
-		result: 0,
+func getRollDiceEvent() Event[onRollDiceContext] {
+	event := NewEvent[onRollDiceContext]()
+	event.subscribe(EventAction[onRollDiceContext]{
+		onEvent: onEventRollDice,
 	})
-	modifiedCtx := ctx.modified.(onRollDiceContext)
+	return event
+}
 
-	print(modifiedCtx.result)
-
-	for _, status := range s.status {
-		if status.effect.onAfterEvent != nil {
-			status.effect.onAfterEvent(&ctx)
-		}
-		ctx.originalResult = RollDice(ctx.dice)
-		ctx.result = ctx.originalResult
-		if status.effect.onAfterRollDice != nil {
-			status.effect.onAfterRollDice(ctx)
-		}
-	}
-	return ctx.result
+func onEventRollDice(ctx *EventContext[onRollDiceContext]) {
+	ctx.modified.result += RollDice(ctx.modified.dice)
 }
 
 func (s *BattleEntity) Damage(damage int, target *BattleEntity) {

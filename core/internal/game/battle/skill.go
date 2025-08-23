@@ -6,17 +6,30 @@ type BattleContext struct {
 	enemies []*BattleEntity
 }
 
-type Event string
+type Event[T Context] struct {
+	name        EventName
+	subscribers []EventAction[T]
+}
+
+func NewEvent[T Context]() Event[T] {
+	var ctx T
+	return Event[T]{
+		name:        ctx.getEventName(),
+		subscribers: make([]EventAction[T], 0),
+	}
+}
+
+type EventName string
 
 const (
-	battleStart = "battleStart"
-	battleEnd   = "battleEnd"
-	roundStart  = "roundStart"
-	roundEnd    = "roundEnd"
-	turnStart   = "turnStart"
-	turnEnd     = "turnEnd"
-	rollDice    = "rollDice"
-	changeStat  = "changeStat"
+	battleStart EventName = "battleStart"
+	battleEnd   EventName = "battleEnd"
+	roundStart  EventName = "roundStart"
+	roundEnd    EventName = "roundEnd"
+	turnStart   EventName = "turnStart"
+	turnEnd     EventName = "turnEnd"
+	rollDice    EventName = "rollDice"
+	changeStat  EventName = "changeStat"
 )
 
 type onRollDiceContext struct {
@@ -24,7 +37,7 @@ type onRollDiceContext struct {
 	result int
 }
 
-func (on onRollDiceContext) getEvent() Event {
+func (ctx onRollDiceContext) getEventName() EventName {
 	return rollDice
 }
 
@@ -35,7 +48,7 @@ type onChangeStatContext struct {
 	receiver *BattleEntity
 }
 
-func (on *onChangeStatContext) getEvent() Event {
+func (on *onChangeStatContext) getEventName() EventName {
 	return changeStat
 }
 
@@ -46,8 +59,24 @@ func createEventContext[T Context](ctx T) EventContext[Context] {
 	}
 }
 
+func (event Event[T]) subscribe(action EventAction[T]) {
+	event.subscribers = append(event.subscribers, action)
+}
+
+func (event Event[T]) emit(cxt *EventContext[T]) {
+	for _, sub := range event.subscribers {
+		sub.onAfterEvent(cxt)
+	}
+	for _, sub := range event.subscribers {
+		sub.onEvent(cxt)
+	}
+	for _, sub := range event.subscribers {
+		sub.onBeforeEvent(cxt)
+	}
+}
+
 type Context interface {
-	getEvent() Event
+	getEventName() EventName
 }
 
 type EventContext[T Context] struct {
@@ -55,7 +84,7 @@ type EventContext[T Context] struct {
 	modified T
 }
 
-type Effect[T Context] struct {
+type EventAction[T Context] struct {
 	onBeforeEvent func(ctx *EventContext[T])
 	onEvent       func(ctx *EventContext[T])
 	onAfterEvent  func(ctx *EventContext[T])
@@ -69,5 +98,5 @@ type Skill struct {
 type Status struct {
 	name     string
 	priority int
-	effect   *Effect[Context]
+	//effect   *Effect[Context]
 }
