@@ -1,6 +1,9 @@
 package battle
 
 import (
+	"pineappletooth/bestoRpg/internal/game/battle/events"
+	"pineappletooth/bestoRpg/internal/game/event"
+
 	"github.com/google/uuid"
 )
 
@@ -12,7 +15,7 @@ type Battle struct {
 }
 
 type Events struct {
-	onRollDice Event[onRollDiceContext]
+	onRollDice event.Event[events.OnRollDiceContext]
 }
 
 func initBattle(team1 []BattleEntity, team2 []BattleEntity) {

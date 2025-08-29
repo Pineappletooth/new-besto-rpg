@@ -1,27 +1,36 @@
 package battle
 
 import (
-	"fmt"
+	"pineappletooth/bestoRpg/internal/game/battle/events"
+	"pineappletooth/bestoRpg/internal/game/event"
+	"pineappletooth/bestoRpg/internal/game/utils"
 	"testing"
 )
 
-// TestHelloName calls greetings.Hello with a name, checking
-// for a valid return value.
 func TestRollDice(t *testing.T) {
 	battleEntity := NewBattleEntity()
-	battleEntity.RollDice(D6)
-	a := EventAction[onRollDiceContext]{
-		onBeforeEvent: func(ctx EventContext[onRollDiceContext]) {
-			fmt.Print("BBBB")
-			ctx.modified.result = 4
+	battleEntity.RollDice(utils.D6)
+	a := event.EventAction[events.OnRollDiceContext]{
+		OnBefore: func(before events.OnRollDiceContext, after events.OnRollDiceContext) events.OnRollDiceContext {
+			after.Dice = []int{1}
+			return after
 		},
-		onAfterEvent: func(ctx EventContext[onRollDiceContext]) {
-			fmt.Print("after", ctx.modified.result)
-			ctx.modified.result = 7
+		OnAfter: func(before events.OnRollDiceContext, after events.OnRollDiceContext) events.OnRollDiceContext {
+			if len(after.Dice) != 1 || after.Dice[0] != 1 {
+				t.Errorf("after.Dice Expected 1, got %d", after.Dice)
+			}
+			if before.Result != 1 {
+				t.Errorf("before.Result Expected 1, got %d", before.Result)
+			}
+			if after.Result != 1 {
+				t.Errorf("after.Result Expected 1, got %d", after.Result)
+			}
+			after.Result = 7
+			return after
 		},
 	}
-	battleEntity.rollDiceEvent.subscribe(a)
-	res := battleEntity.RollDice(D6)
+	battleEntity.rollDiceEvent.Subscribe(a)
+	res := battleEntity.RollDice(utils.D6)
 	if res != 7 {
 		t.Errorf("Expected 7, got %d", res)
 	}

@@ -1,6 +1,12 @@
 package battle
 
-import "github.com/google/uuid"
+import (
+	"pineappletooth/bestoRpg/internal/game/battle/events"
+	"pineappletooth/bestoRpg/internal/game/event"
+	"pineappletooth/bestoRpg/internal/game/utils"
+
+	"github.com/google/uuid"
+)
 
 type Stat string
 
@@ -17,35 +23,24 @@ type BattleEntity struct {
 	skills        map[string]Skill
 	status        []Status
 	chosenSkills  []string
-	rollDiceEvent Event[onRollDiceContext]
+	rollDiceEvent event.Event[events.OnRollDiceContext]
 }
 
 func NewBattleEntity() BattleEntity {
 	return BattleEntity{
-		rollDiceEvent: getRollDiceEvent(),
+		rollDiceEvent: events.GetRollDiceEvent(),
 		id:            uuid.New(),
 	}
 }
 
-func (s BattleEntity) RollDice(diceType DiceType) int {
-	dice := GetDice(diceType)
-	ctx := onRollDiceContext{
-		dice:   dice,
-		result: 0,
+func (s *BattleEntity) RollDice(diceType utils.DiceType) int {
+	dice := utils.GetDice(diceType)
+	ctx := events.OnRollDiceContext{
+		Dice:   dice,
+		Result: 0,
 	}
-	res := s.rollDiceEvent.emit(createEventContext(ctx))
-	return res.result
-}
-
-func getRollDiceEvent() Event[onRollDiceContext] {
-	event := NewEvent(onEventRollDice)
-
-	return event
-}
-
-func onEventRollDice(ctx EventContext[onRollDiceContext]) EventContext[onRollDiceContext] {
-	ctx.modified.result += RollDice(ctx.modified.dice)
-	return ctx
+	res := s.rollDiceEvent.Emit(ctx)
+	return res.Result
 }
 
 func (s *BattleEntity) Damage(damage int, target *BattleEntity) {
