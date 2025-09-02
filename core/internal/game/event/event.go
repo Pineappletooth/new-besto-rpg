@@ -2,35 +2,28 @@ package event
 
 type Event[T Context] struct {
 	name        EventName
-	subscribers []EventAction[T]
-	action      func(before T, after T) T
+	subscribers []Action[T]
 }
 
-func NewEvent[T Context](action func(T, T) T) Event[T] {
+func New[T Context]() Event[T] {
 	var ctx T
 	return Event[T]{
 		name:        ctx.GetEventName(),
-		subscribers: make([]EventAction[T], 0),
-		action:      action,
+		subscribers: make([]Action[T], 0),
 	}
 }
 
 type EventName string
 
-func (event *Event[T]) Subscribe(action EventAction[T]) {
+func (event *Event[T]) Subscribe(action Action[T]) {
 	event.subscribers = append(event.subscribers, action)
 }
 
 func (event *Event[T]) Emit(cxt T) T {
 	before := cxt
 	after := cxt
-	for _, sub := range event.subscribers {
-		after = sub.OnBefore(before, after)
-	}
-	before = event.action(before, after)
-	after = before
-	for _, sub := range event.subscribers {
-		after = sub.OnAfter(before, after)
+	for _, action := range event.subscribers {
+		after = action(before, after)
 	}
 	return after
 }
@@ -39,7 +32,4 @@ type Context interface {
 	GetEventName() EventName
 }
 
-type EventAction[T Context] struct {
-	OnBefore func(before T, after T) T
-	OnAfter  func(before T, after T) T
-}
+type Action[T Context] func(before T, after T) T
