@@ -2,7 +2,7 @@ package battle
 
 type Skill struct {
 	name  string
-	onUse func(target *BattleEntity)
+	onUse func(battle *Battle, self *BattleEntity)
 }
 
 type Status struct {

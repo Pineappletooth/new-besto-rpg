@@ -10,7 +10,10 @@ const (
 	HP = "HP"
 )
 
-type Stats map[Stat]int
+type Stats struct {
+	HP    int
+	Aggro int
+}
 
 type BattleEntity struct {
 	id            uuid.UUID
@@ -20,11 +23,21 @@ type BattleEntity struct {
 	status        []Status
 	chosenSkills  []string
 	events        Events
+	team          int
 }
 
 func NewBattleEntity() BattleEntity {
 	return BattleEntity{
 		id:     uuid.New(),
 		events: newEvents(),
+		stats: Stats{
+			10,
+			1,
+		},
+		originalStats: Stats{
+			10,
+			1,
+		},
+		skills: map[string]Skill{},
 	}
 }
