@@ -31,9 +31,9 @@ func parseCommandMock(first string) {
 }
 
 func (battle *Battle) processRound() {
-	for _, entity := range battle.entities {
-		for _, skillName := range entity.chosenSkills {
-			entity.skills[skillName].onUse(battle, &entity)
+	for i := range battle.entities {
+		for j := range battle.entities[i].chosenSkills {
+			battle.entities[i].skills[battle.entities[i].chosenSkills[j]].onUse(battle, &battle.entities[i])
 		}
 	}
 }
@@ -66,9 +66,9 @@ func (battle *Battle) rollDice(emitter *BattleEntity, dice []int) int {
 
 func (battle *Battle) getEnemies(team int) []*BattleEntity {
 	enemies := make([]*BattleEntity, 0, len(battle.entities)-1)
-	for _, battleEntity := range battle.entities {
-		if team != battleEntity.team {
-			enemies = append(enemies, &battleEntity)
+	for i := range battle.entities {
+		if team != battle.entities[i].team {
+			enemies = append(enemies, &battle.entities[i])
 		}
 	}
 	return enemies
