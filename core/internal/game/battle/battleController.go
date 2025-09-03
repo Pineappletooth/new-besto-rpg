@@ -31,19 +31,23 @@ func onSelectSkill(battle *Battle) {
 
 func onRoundStart(battle *Battle) {
 	processRound(battle)
-	if checkAllDead(battle) {
+	if checkEndBattle(battle) {
 		end(battle)
 	}
 	onRoundStart(battle)
 }
 
-func checkAllDead(battle *Battle) bool {
+func checkEndBattle(battle *Battle) bool {
+	teams := make(map[int]bool)
+	deadTeams := make(map[int]bool)
 	for i := range battle.entities {
-		if !battle.entities[i].isDead() {
-			return false
+		teams[battle.entities[i].team] = true
+		if battle.entities[i].isDead() {
+			deadTeams[battle.entities[i].team] = true
 		}
 	}
-	return true
+
+	return len(teams)-len(deadTeams) <= 1
 }
 
 func end(battle *Battle) {
