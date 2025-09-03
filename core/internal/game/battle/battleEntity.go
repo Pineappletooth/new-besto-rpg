@@ -16,7 +16,7 @@ type Stats struct {
 }
 
 type BattleEntity struct {
-	id            uuid.UUID
+	id            string
 	stats         Stats
 	originalStats Stats
 	skills        map[string]Skill
@@ -28,7 +28,7 @@ type BattleEntity struct {
 
 func NewBattleEntity() BattleEntity {
 	return BattleEntity{
-		id:     uuid.New(),
+		id:     uuid.New().String(),
 		events: newEvents(),
 		stats: Stats{
 			10,

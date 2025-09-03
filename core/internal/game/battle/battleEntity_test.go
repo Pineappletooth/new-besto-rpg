@@ -11,7 +11,7 @@ func TestSimulation(t *testing.T) {
 	skill := Skill{
 		name,
 		func(battle *Battle, self *BattleEntity) {
-			battle.dmg(self, battle.rollDice(self, []int{3}))
+			battle.dmg(dmgCtx{emitter: self, dmg: battle.rollDice(self, []int{3})})
 		},
 	}
 
@@ -26,7 +26,7 @@ func TestSimulation(t *testing.T) {
 		entities: []BattleEntity{entity1, entity2},
 	}
 
-	battle.processRound()
+	processRound(&battle)
 	if battle.entities[0].stats.HP != 7 {
 		t.Error("Expected entity 1 to have 7 HP, has", battle.entities[0].stats.HP)
 	}
@@ -42,7 +42,7 @@ func TestSimulationWithEvents(t *testing.T) {
 	skill := Skill{
 		name,
 		func(battle *Battle, self *BattleEntity) {
-			battle.dmg(self, battle.rollDice(self, []int{3}))
+			battle.dmg(dmgCtx{emitter: self, dmg: battle.rollDice(self, []int{3})})
 		},
 	}
 
@@ -67,7 +67,7 @@ func TestSimulationWithEvents(t *testing.T) {
 		entities: []BattleEntity{entity1, entity2},
 	}
 
-	battle.processRound()
+	processRound(&battle)
 	if battle.entities[0].stats.HP != 6 {
 		t.Error("Expected entity 1 to have 6 HP, has", battle.entities[0].stats.HP)
 	}
