@@ -26,6 +26,10 @@ type BattleEntity struct {
 	team          int
 }
 
+func (b *BattleEntity) isDead() bool {
+	return b.stats.HP <= 0
+}
+
 func NewBattleEntity() BattleEntity {
 	return BattleEntity{
 		id:     uuid.New().String(),
