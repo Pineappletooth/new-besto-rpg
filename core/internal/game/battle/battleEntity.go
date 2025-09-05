@@ -1,24 +1,15 @@
 package battle
 
 import (
+	"pineappletooth/bestoRpg/internal/model"
+
 	"github.com/google/uuid"
 )
 
-type Stat string
-
-const (
-	HP = "HP"
-)
-
-type Stats struct {
-	HP    int
-	Aggro int
-}
-
 type BattleEntity struct {
 	id            string
-	stats         Stats
-	originalStats Stats
+	stats         model.Stats
+	originalStats model.Stats
 	skills        map[string]Skill
 	status        []Status
 	chosenSkills  []string
@@ -34,14 +25,18 @@ func NewBattleEntity() BattleEntity {
 	return BattleEntity{
 		id:     uuid.NewString(),
 		events: newEvents(),
-		stats: Stats{
-			10,
-			1,
+		stats: model.Stats{
+			HP:    10,
+			Aggro: 1,
 		},
-		originalStats: Stats{
-			10,
-			1,
+		originalStats: model.Stats{
+			HP:    10,
+			Aggro: 1,
 		},
 		skills: map[string]Skill{},
 	}
+}
+
+func NewBattleEntityFromCharacter(c model.Character) BattleEntity {
+
 }

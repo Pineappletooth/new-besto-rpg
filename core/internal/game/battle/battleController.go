@@ -19,7 +19,16 @@ func New(entities []BattleEntity) *Battle {
 	}
 }
 
-func selectSkill(battle *Battle, string battleId, skill []string) {
+func selectSkill(battle *Battle, battleId string, skill []string) {
+	entity, ok := battle.getEntityById(battleId)
+	if !ok {
+		return
+	}
+	for _, s := range skill {
+		if _, ok := entity.skills[s]; !ok {
+			return
+		}
+	}
 	entity.chosenSkills = skill
 	onSelectSkill(battle)
 }
