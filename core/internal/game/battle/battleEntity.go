@@ -7,7 +7,7 @@ import (
 )
 
 type BattleEntity struct {
-	id            string
+	Id            string
 	stats         model.Stats
 	originalStats model.Stats
 	skills        map[string]Skill
@@ -23,7 +23,7 @@ func (b *BattleEntity) isDead() bool {
 
 func NewBattleEntity() BattleEntity {
 	return BattleEntity{
-		id:     uuid.NewString(),
+		Id:     uuid.NewString(),
 		events: newEvents(),
 		stats: model.Stats{
 			HP:    10,
@@ -38,5 +38,5 @@ func NewBattleEntity() BattleEntity {
 }
 
 func NewBattleEntityFromCharacter(c model.Character) BattleEntity {
-
+	return BattleEntity{}
 }

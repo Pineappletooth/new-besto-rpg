@@ -6,25 +6,29 @@ import (
 )
 
 type Battle struct {
-	id       string
+	Id       string
 	entities []BattleEntity
 }
 
 type dmgCtx struct {
-	emitter *BattleEntity
-	target  *BattleEntity
-	dmg     int
+	Emitter *BattleEntity
+	Target  *BattleEntity
+	Dmg     int
 }
 
-func (battle *Battle) dmg(ctx dmgCtx) {
-	target := ctx.target
+func (battle *Battle) Dm2() {
+	println("KK")
+}
+
+func (battle *Battle) Dmg(ctx dmgCtx) {
+	target := ctx.Target
 	if target == nil {
-		target = battle.getTarget(ctx.emitter.team)
+		target = battle.getTarget(ctx.Emitter.team)
 	}
 
 	//on before event
 
-	target.stats.HP = target.stats.HP - ctx.dmg
+	target.stats.HP = target.stats.HP - ctx.Dmg
 
 	//on after event
 }
@@ -66,7 +70,7 @@ func (battle *Battle) getTarget(team int) *BattleEntity {
 
 func (battle *Battle) getEntityById(id string) (*BattleEntity, bool) {
 	for i := range battle.entities {
-		if battle.entities[i].id == id {
+		if battle.entities[i].Id == id {
 			return &battle.entities[i], true
 		}
 	}

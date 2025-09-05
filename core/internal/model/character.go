@@ -6,12 +6,18 @@ type Character struct {
 	Inventory Inventory `json:"inventory" redis:"inventory"`
 }
 
+type EquipmentType string
+
+const (
+	Head      EquipmentType = "head"
+	Body      EquipmentType = "body"
+	Legs      EquipmentType = "legs"
+	LeftHand  EquipmentType = "left_hand"
+	RightHand EquipmentType = "right_hand"
+)
+
 type Equipment struct {
-	Head      Item `json:"head" redis:"head"`
-	Body      Item `json:"body" redis:"body"`
-	Legs      Item `json:"legs" redis:"legs"`
-	LeftHand  Item `json:"left_hand" redis:"left_hand"`
-	RightHand Item `json:"right_hand" redis:"right_hand"`
+	Items map[EquipmentType]Item `json:"items" redis:"items"`
 }
 
 type Item struct {

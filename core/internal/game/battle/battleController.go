@@ -6,7 +6,7 @@ func processRound(battle *Battle) {
 	for i := range battle.entities {
 		entity := &battle.entities[i]
 		for j := range entity.chosenSkills {
-			battle.entities[i].skills[battle.entities[i].chosenSkills[j]].onUse(battle, entity)
+			battle.entities[i].skills[battle.entities[i].chosenSkills[j]].OnUse(battle, entity)
 		}
 		entity.chosenSkills = make([]string, 0)
 	}
@@ -14,7 +14,7 @@ func processRound(battle *Battle) {
 
 func New(entities []BattleEntity) *Battle {
 	return &Battle{
-		id:       uuid.NewString(),
+		Id:       uuid.NewString(),
 		entities: entities,
 	}
 }

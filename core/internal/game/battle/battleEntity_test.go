@@ -11,7 +11,7 @@ func TestFlow(t *testing.T) {
 	skill := Skill{
 		name,
 		func(battle *Battle, self *BattleEntity) {
-			battle.dmg(dmgCtx{emitter: self, dmg: battle.rollDice(self, []int{3})})
+			battle.Dmg(dmgCtx{Emitter: self, Dmg: battle.rollDice(self, []int{3})})
 		},
 	}
 
@@ -22,8 +22,8 @@ func TestFlow(t *testing.T) {
 
 	battle := New([]BattleEntity{entity1, entity2})
 
-	selectSkill(battle, entity1.id, []string{name, name})
-	selectSkill(battle, entity2.id, []string{name})
+	selectSkill(battle, entity1.Id, []string{name, name})
+	selectSkill(battle, entity2.Id, []string{name})
 
 	if battle.entities[0].stats.HP != 7 {
 		t.Error("Expected entity 1 to have 7 HP, has", battle.entities[0].stats.HP)
@@ -40,7 +40,7 @@ func TestSimulation(t *testing.T) {
 	skill := Skill{
 		name,
 		func(battle *Battle, self *BattleEntity) {
-			battle.dmg(dmgCtx{emitter: self, dmg: battle.rollDice(self, []int{3})})
+			battle.Dmg(dmgCtx{Emitter: self, Dmg: battle.rollDice(self, []int{3})})
 		},
 	}
 
@@ -69,7 +69,7 @@ func TestSimulationWithEvents(t *testing.T) {
 	skill := Skill{
 		name,
 		func(battle *Battle, self *BattleEntity) {
-			battle.dmg(dmgCtx{emitter: self, dmg: battle.rollDice(self, []int{3})})
+			battle.Dmg(dmgCtx{Emitter: self, Dmg: battle.rollDice(self, []int{3})})
 		},
 	}
 

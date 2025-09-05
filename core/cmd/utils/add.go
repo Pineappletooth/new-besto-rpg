@@ -7,7 +7,7 @@ import (
 
 func main() {
 	err := persistence.AddCharacter(model.Character{
-		Id: 0,
+		Id: "0",
 		Inventory: model.Inventory{
 			Items: map[string]int{
 				"potion": 5,

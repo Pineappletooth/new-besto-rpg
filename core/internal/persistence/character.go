@@ -4,16 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"pineappletooth/bestoRpg/internal/model"
-	"strconv"
 )
 
 func AddCharacter(character model.Character) error {
-	res := redisClient.JSONSet(ctx, "user:"+strconv.FormatUint(uint64(character.Id),10), "$",character)
+	res := redisClient.JSONSet(ctx, "user:"+character.Id, "$", character)
 	return res.Err()
 }
 
-func GetCharacter(id uint32) (model.Character, error) {
-	userId := strconv.FormatUint(uint64(id),10)
+func GetCharacter(userId string) (model.Character, error) {
 	if redisClient.Exists(ctx, "user:"+userId).Val() == 0 {
 		return model.Character{}, errors.New("el personaje no existe")
 	}
