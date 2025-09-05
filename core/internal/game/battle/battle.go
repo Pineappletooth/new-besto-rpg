@@ -1,13 +1,12 @@
 package battle
 
 import (
-	"github.com/google/uuid"
 	"pineappletooth/bestoRpg/internal/game/utils"
 	"slices"
 )
 
 type Battle struct {
-	id       uuid.UUID
+	id       string
 	entities []BattleEntity
 }
 
@@ -63,4 +62,13 @@ func (battle *Battle) getTarget(team int) *BattleEntity {
 	})
 	print(enemies)
 	return enemies[len(enemies)-1]
+}
+
+func (battle *Battle) getEntityById(id string) (*BattleEntity, bool) {
+	for i := range battle.entities {
+		if battle.entities[i].id == id {
+			return &battle.entities[i], true
+		}
+	}
+	return nil, false
 }

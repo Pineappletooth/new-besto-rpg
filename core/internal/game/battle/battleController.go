@@ -1,5 +1,7 @@
 package battle
 
+import "github.com/google/uuid"
+
 func processRound(battle *Battle) {
 	for i := range battle.entities {
 		entity := &battle.entities[i]
@@ -10,11 +12,14 @@ func processRound(battle *Battle) {
 	}
 }
 
-func New(battle *Battle) *Battle {
-	return battle
+func New(entities []BattleEntity) *Battle {
+	return &Battle{
+		id:       uuid.NewString(),
+		entities: entities,
+	}
 }
 
-func selectSkill(battle *Battle, entity *BattleEntity, skill []string) {
+func selectSkill(battle *Battle, string battleId, skill []string) {
 	entity.chosenSkills = skill
 	onSelectSkill(battle)
 }
@@ -34,7 +39,6 @@ func onRoundStart(battle *Battle) {
 	if checkEndBattle(battle) {
 		end(battle)
 	}
-	onRoundStart(battle)
 }
 
 func checkEndBattle(battle *Battle) bool {

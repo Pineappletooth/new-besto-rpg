@@ -22,11 +22,9 @@ func TestSimulation(t *testing.T) {
 	entity1.chosenSkills = append(entity1.chosenSkills, name, name)
 	entity2.chosenSkills = append(entity2.chosenSkills, name)
 
-	battle := Battle{
-		entities: []BattleEntity{entity1, entity2},
-	}
+	battle := New([]BattleEntity{entity1, entity2})
 
-	processRound(&battle)
+	processRound(battle)
 	if battle.entities[0].stats.HP != 7 {
 		t.Error("Expected entity 1 to have 7 HP, has", battle.entities[0].stats.HP)
 	}

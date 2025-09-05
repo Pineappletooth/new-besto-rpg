@@ -32,7 +32,7 @@ func (b *BattleEntity) isDead() bool {
 
 func NewBattleEntity() BattleEntity {
 	return BattleEntity{
-		id:     uuid.New().String(),
+		id:     uuid.NewString(),
 		events: newEvents(),
 		stats: Stats{
 			10,
