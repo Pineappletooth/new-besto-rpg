@@ -8,35 +8,41 @@ import (
 
 type BattleEntity struct {
 	Id            string
-	stats         model.Stats
-	originalStats model.Stats
-	skills        map[string]Skill
-	status        []Status
-	chosenSkills  []string
-	events        Events
-	team          int
+	Stats         model.Stats
+	OriginalStats model.Stats
+	Skills        []string
+	Status        []Status
+	ChosenSkills  []string
+	Events        Events
+	Team          int
 }
 
 func (b *BattleEntity) isDead() bool {
-	return b.stats.HP <= 0
+	return b.Stats.HP <= 0
 }
 
 func NewBattleEntity() BattleEntity {
 	return BattleEntity{
 		Id:     uuid.NewString(),
-		events: newEvents(),
-		stats: model.Stats{
+		Events: newEvents(),
+		Stats: model.Stats{
 			HP:    10,
 			Aggro: 1,
 		},
-		originalStats: model.Stats{
+		OriginalStats: model.Stats{
 			HP:    10,
 			Aggro: 1,
 		},
-		skills: map[string]Skill{},
+		Skills: map[string]Skill{},
 	}
 }
 
 func NewBattleEntityFromCharacter(c model.Character) BattleEntity {
-	return BattleEntity{}
+	stats := model.Stats{}
+	skills
+	return BattleEntity{
+		Id:     c.Id,
+		Events: newEvents(),
+		Stats:  c.Equipment.Items,
+	}
 }

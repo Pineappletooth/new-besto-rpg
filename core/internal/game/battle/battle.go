@@ -23,25 +23,25 @@ func (battle *Battle) Dm2() {
 func (battle *Battle) Dmg(ctx dmgCtx) {
 	target := ctx.Target
 	if target == nil {
-		target = battle.getTarget(ctx.Emitter.team)
+		target = battle.getTarget(ctx.Emitter.Team)
 	}
 
 	//on before event
 
-	target.stats.HP = target.stats.HP - ctx.Dmg
+	target.Stats.HP = target.Stats.HP - ctx.Dmg
 
 	//on after event
 }
 
-func (battle *Battle) rollDice(emitter *BattleEntity, dice []int) int {
+func (battle *Battle) RollDice(emitter *BattleEntity, dice []int) int {
 
-	before := emitter.events.onBeforeRollDice.Emit(onBeforeRollDiceContext{
+	before := emitter.Events.onBeforeRollDice.Emit(onBeforeRollDiceContext{
 		dice,
 	})
 
 	result := utils.RollDice(before.Dice)
 
-	after := emitter.events.onAfterRollDice.Emit(onAfterRollDiceContext{
+	after := emitter.Events.onAfterRollDice.Emit(onAfterRollDiceContext{
 		dice,
 		result,
 	})
@@ -52,7 +52,7 @@ func (battle *Battle) rollDice(emitter *BattleEntity, dice []int) int {
 func (battle *Battle) getEnemies(team int) []*BattleEntity {
 	enemies := make([]*BattleEntity, 0, len(battle.entities)-1)
 	for i := range battle.entities {
-		if team != battle.entities[i].team {
+		if team != battle.entities[i].Team {
 			enemies = append(enemies, &battle.entities[i])
 		}
 	}
@@ -62,7 +62,7 @@ func (battle *Battle) getEnemies(team int) []*BattleEntity {
 func (battle *Battle) getTarget(team int) *BattleEntity {
 	enemies := battle.getEnemies(team)
 	slices.SortFunc(enemies, func(e, e2 *BattleEntity) int {
-		return e.stats.Aggro - e2.stats.Aggro
+		return e.Stats.Aggro - e2.Stats.Aggro
 	})
 	print(enemies)
 	return enemies[len(enemies)-1]

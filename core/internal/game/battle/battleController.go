@@ -5,10 +5,10 @@ import "github.com/google/uuid"
 func processRound(battle *Battle) {
 	for i := range battle.entities {
 		entity := &battle.entities[i]
-		for j := range entity.chosenSkills {
-			battle.entities[i].skills[battle.entities[i].chosenSkills[j]].OnUse(battle, entity)
+		for j := range entity.ChosenSkills {
+			battle.entities[i].Skills[battle.entities[i].ChosenSkills[j]].OnUse(battle, entity)
 		}
-		entity.chosenSkills = make([]string, 0)
+		entity.ChosenSkills = make([]string, 0)
 	}
 }
 
@@ -25,18 +25,18 @@ func selectSkill(battle *Battle, battleId string, skill []string) {
 		return
 	}
 	for _, s := range skill {
-		if _, ok := entity.skills[s]; !ok {
+		if _, ok := entity.Skills[s]; !ok {
 			return
 		}
 	}
-	entity.chosenSkills = skill
+	entity.ChosenSkills = skill
 	onSelectSkill(battle)
 }
 
 func onSelectSkill(battle *Battle) {
 	for i := range battle.entities {
 		entity := &battle.entities[i]
-		if !entity.isDead() && len(entity.chosenSkills) == 0 {
+		if !entity.isDead() && len(entity.ChosenSkills) == 0 {
 			return
 		}
 	}
@@ -54,9 +54,9 @@ func checkEndBattle(battle *Battle) bool {
 	teams := make(map[int]bool)
 	deadTeams := make(map[int]bool)
 	for i := range battle.entities {
-		teams[battle.entities[i].team] = true
+		teams[battle.entities[i].Team] = true
 		if battle.entities[i].isDead() {
-			deadTeams[battle.entities[i].team] = true
+			deadTeams[battle.entities[i].Team] = true
 		}
 	}
 
