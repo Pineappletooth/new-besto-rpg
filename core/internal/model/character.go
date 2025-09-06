@@ -36,3 +36,8 @@ type Stats struct {
 	HP    int
 	Aggro int
 }
+
+func (stat *Stats) AddStat(newStat Stats) {
+	stat.HP += newStat.HP
+	stat.Aggro += newStat.Aggro
+}

@@ -10,16 +10,14 @@ func TestNewSkill(t *testing.T) {
 		Name: "test",
 		Action: `
 skill.OnUse = function (battle, entity)
-	print(battle.Id)
-	print(battle:Dm2())
 	battle:Dmg({Emitter=entity, Dmg=battle:RollDice(entity, {3})})
 end`,
 	}
 
 	s := NewSkillFromModel(dto)
 
-	entity1 := NewBattleEntity()
-	entity2 := NewBattleEntity()
+	entity1 := NewBattleEntityTest()
+	entity2 := NewBattleEntityTest()
 	name := "attack"
 	skill := Skill{
 		name,
@@ -28,10 +26,10 @@ end`,
 		},
 	}
 
+	skills[name] = skill
+
 	entity1.Team = 1
 	entity2.Team = 2
-	entity1.Skills[name] = skill
-	entity2.Skills[name] = skill
 
 	battle := New([]BattleEntity{entity1, entity2})
 	e, _ := battle.getEntityById(entity1.Id)

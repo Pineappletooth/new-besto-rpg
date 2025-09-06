@@ -5,8 +5,8 @@ import "github.com/google/uuid"
 func processRound(battle *Battle) {
 	for i := range battle.entities {
 		entity := &battle.entities[i]
-		for j := range entity.ChosenSkills {
-			battle.entities[i].Skills[battle.entities[i].ChosenSkills[j]].OnUse(battle, entity)
+		for _, skill := range entity.ChosenSkills {
+			battle.UseSkill(skill, entity)
 		}
 		entity.ChosenSkills = make([]string, 0)
 	}
@@ -19,17 +19,17 @@ func New(entities []BattleEntity) *Battle {
 	}
 }
 
-func selectSkill(battle *Battle, battleId string, skill []string) {
+func selectSkill(battle *Battle, battleId string, skills []string) {
 	entity, ok := battle.getEntityById(battleId)
 	if !ok {
 		return
 	}
-	for _, s := range skill {
-		if _, ok := entity.Skills[s]; !ok {
+	for _, skill := range skills {
+		if _, ok := battle.GetSkill(skill); !ok {
 			return
 		}
 	}
-	entity.ChosenSkills = skill
+	entity.ChosenSkills = skills
 	onSelectSkill(battle)
 }
 

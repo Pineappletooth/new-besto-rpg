@@ -22,7 +22,7 @@ const (
 
 type WorkRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_UserId      uint32                 `protobuf:"varint,1,opt,name=userId" json:"userId,omitempty"`
+	xxx_hidden_UserId      *string                `protobuf:"bytes,1,opt,name=userId" json:"userId,omitempty"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -54,15 +54,18 @@ func (x *WorkRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *WorkRequest) GetUserId() uint32 {
+func (x *WorkRequest) GetUserId() string {
 	if x != nil {
-		return x.xxx_hidden_UserId
+		if x.xxx_hidden_UserId != nil {
+			return *x.xxx_hidden_UserId
+		}
+		return ""
 	}
-	return 0
+	return ""
 }
 
-func (x *WorkRequest) SetUserId(v uint32) {
-	x.xxx_hidden_UserId = v
+func (x *WorkRequest) SetUserId(v string) {
+	x.xxx_hidden_UserId = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
 }
 
@@ -75,13 +78,13 @@ func (x *WorkRequest) HasUserId() bool {
 
 func (x *WorkRequest) ClearUserId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_UserId = 0
+	x.xxx_hidden_UserId = nil
 }
 
 type WorkRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	UserId *uint32
+	UserId *string
 }
 
 func (b0 WorkRequest_builder) Build() *WorkRequest {
@@ -90,7 +93,7 @@ func (b0 WorkRequest_builder) Build() *WorkRequest {
 	_, _ = b, x
 	if b.UserId != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_UserId = *b.UserId
+		x.xxx_hidden_UserId = b.UserId
 	}
 	return m0
 }
@@ -299,7 +302,7 @@ var file_proto_commands_proto_rawDesc = []byte{
 	0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x67, 0x6f, 0x5f, 0x66, 0x65,
 	0x61, 0x74, 0x75, 0x72, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x25, 0x0a, 0x0b,
 	0x57, 0x6f, 0x72, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x75,
-	0x73, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x06, 0x75, 0x73, 0x65,
+	0x73, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x75, 0x73, 0x65,
 	0x72, 0x49, 0x64, 0x22, 0x61, 0x0a, 0x0c, 0x57, 0x6f, 0x72, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f,
 	0x6e, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x03, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x6e,

@@ -5,8 +5,8 @@ import (
 )
 
 func TestFlow(t *testing.T) {
-	entity1 := NewBattleEntity()
-	entity2 := NewBattleEntity()
+	entity1 := NewBattleEntityTest()
+	entity2 := NewBattleEntityTest()
 	name := "attack"
 	skill := Skill{
 		name,
@@ -17,8 +17,7 @@ func TestFlow(t *testing.T) {
 
 	entity1.Team = 1
 	entity2.Team = 2
-	entity1.Skills[name] = skill
-	entity2.Skills[name] = skill
+	skills[name] = skill
 
 	battle := New([]BattleEntity{entity1, entity2})
 
@@ -34,8 +33,8 @@ func TestFlow(t *testing.T) {
 }
 
 func TestSimulation(t *testing.T) {
-	entity1 := NewBattleEntity()
-	entity2 := NewBattleEntity()
+	entity1 := NewBattleEntityTest()
+	entity2 := NewBattleEntityTest()
 	name := "attack"
 	skill := Skill{
 		name,
@@ -46,8 +45,7 @@ func TestSimulation(t *testing.T) {
 
 	entity1.Team = 1
 	entity2.Team = 2
-	entity1.Skills[name] = skill
-	entity2.Skills[name] = skill
+	skills[name] = skill
 	entity1.ChosenSkills = append(entity1.ChosenSkills, name, name)
 	entity2.ChosenSkills = append(entity2.ChosenSkills, name)
 
@@ -63,8 +61,8 @@ func TestSimulation(t *testing.T) {
 }
 
 func TestSimulationWithEvents(t *testing.T) {
-	entity1 := NewBattleEntity()
-	entity2 := NewBattleEntity()
+	entity1 := NewBattleEntityTest()
+	entity2 := NewBattleEntityTest()
 	name := "attack"
 	skill := Skill{
 		name,
@@ -85,8 +83,7 @@ func TestSimulationWithEvents(t *testing.T) {
 
 	entity1.Team = 1
 	entity2.Team = 2
-	entity1.Skills[name] = skill
-	entity2.Skills[name] = skill
+	skills[name] = skill
 	entity1.ChosenSkills = append(entity1.ChosenSkills, name, name)
 	entity2.ChosenSkills = append(entity2.ChosenSkills, name)
 

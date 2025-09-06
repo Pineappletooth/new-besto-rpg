@@ -5,6 +5,8 @@ import (
 	"slices"
 )
 
+var skills = make(map[string]Skill)
+
 type Battle struct {
 	Id       string
 	entities []BattleEntity
@@ -16,8 +18,19 @@ type dmgCtx struct {
 	Dmg     int
 }
 
-func (battle *Battle) Dm2() {
-	println("KK")
+func (battle *Battle) UseSkill(name string, selfEntity *BattleEntity) {
+	skill, ok := battle.GetSkill(name)
+	if !ok {
+		return
+	}
+	//TODO: Event on cast skill
+	skill.OnUse(battle, selfEntity)
+	//TODO: Event after cast skill
+}
+
+func (*Battle) GetSkill(name string) (Skill, bool) {
+	skill, ok := skills[name]
+	return skill, ok
 }
 
 func (battle *Battle) Dmg(ctx dmgCtx) {
