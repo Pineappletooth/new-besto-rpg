@@ -1,8 +1,18 @@
 package battle
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"pineappletooth/bestoRpg/internal/model"
+)
 
-func processRound(battle *Battle) {
+type skillPersistence interface {
+	GetSkill(skill string) (model.Skill, error)
+}
+type battleController struct {
+	skillPersistence skillPersistence
+}
+
+func (controller battleController) processRound(battle *Battle) {
 	for i := range battle.entities {
 		entity := &battle.entities[i]
 		for _, skill := range entity.ChosenSkills {
@@ -12,14 +22,29 @@ func processRound(battle *Battle) {
 	}
 }
 
-func New(entities []BattleEntity) *Battle {
+func NewBattle(controller battleController, entities []BattleEntity) *Battle {
+	skills := make(map[string]*Skill)
+	for i := range entities {
+		for _, skill := range entities[i].Base.Skills {
+			skills[skill] = controller.loadSkill(skill)
+		}
+	}
 	return &Battle{
 		Id:       uuid.NewString(),
 		entities: entities,
+		skills:   skills,
 	}
 }
 
-func selectSkill(battle *Battle, battleId string, skills []string) {
+func (controller battleController) loadSkill(skill string) *Skill {
+	skillModel, err := controller.skillPersistence.GetSkill(skill)
+	if err != nil {
+		panic(err.Error())
+	}
+	return NewSkillFromModel(skillModel)
+}
+
+func (controller battleController) selectSkill(battle *Battle, battleId string, skills []string) {
 	entity, ok := battle.getEntityById(battleId)
 	if !ok {
 		return
@@ -30,27 +55,27 @@ func selectSkill(battle *Battle, battleId string, skills []string) {
 		}
 	}
 	entity.ChosenSkills = skills
-	onSelectSkill(battle)
+	controller.onSelectSkill(battle)
 }
 
-func onSelectSkill(battle *Battle) {
+func (controller battleController) onSelectSkill(battle *Battle) {
 	for i := range battle.entities {
 		entity := &battle.entities[i]
 		if !entity.isDead() && len(entity.ChosenSkills) == 0 {
 			return
 		}
 	}
-	onRoundStart(battle)
+	controller.onRoundStart(battle)
 }
 
-func onRoundStart(battle *Battle) {
-	processRound(battle)
-	if checkEndBattle(battle) {
-		end(battle)
+func (controller battleController) onRoundStart(battle *Battle) {
+	controller.processRound(battle)
+	if controller.checkEndBattle(battle) {
+		controller.end(battle)
 	}
 }
 
-func checkEndBattle(battle *Battle) bool {
+func (controller battleController) checkEndBattle(battle *Battle) bool {
 	teams := make(map[int]bool)
 	deadTeams := make(map[int]bool)
 	for i := range battle.entities {
@@ -63,6 +88,6 @@ func checkEndBattle(battle *Battle) bool {
 	return len(teams)-len(deadTeams) <= 1
 }
 
-func end(battle *Battle) {
+func (controller battleController) end(battle *Battle) {
 	//
 }

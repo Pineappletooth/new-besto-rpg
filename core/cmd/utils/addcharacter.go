@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	addChar()
 	addSkill()
 }
 
@@ -40,7 +41,7 @@ func addChar() {
 
 func addSkill() {
 	skill := model.Skill{
-		Name: "Attack",
+		Name: "attack",
 		Action: `skill.OnUse = function (battle, entity)
 	battle:Dmg({Emitter=entity, Dmg=battle:RollDice(entity, {3})})
 end`,

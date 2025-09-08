@@ -43,7 +43,7 @@ func NewBattleEntityTest() BattleEntity {
 			HP:    10,
 			Aggro: 1,
 		},
-		Skills: make([]string, 0),
+		Skills: []string{"attack"},
 	})
 }
 
