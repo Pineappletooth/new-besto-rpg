@@ -13,7 +13,7 @@ func AddCharacter(character model.Character) error {
 
 func GetCharacter(userId string) (model.Character, error) {
 	if redisClient.Exists(ctx, "user:"+userId).Val() == 0 {
-		return model.Character{}, errors.New("el personaje no existe")
+		return model.Character{}, errors.New("character not found")
 	}
 	res := redisClient.JSONGet(ctx, "user:"+userId)
 	if res.Err() != nil {

@@ -6,12 +6,14 @@ import (
 	"pineappletooth/bestoRpg/internal/model"
 )
 
-func AddSkill(skill model.Skill) error {
+type Skill struct{}
+
+func (Skill) AddSkill(skill model.Skill) error {
 	res := redisClient.JSONSet(ctx, "skill:"+skill.Name, "$", skill)
 	return res.Err()
 }
 
-func GetSkill(skill string) (model.Skill, error) {
+func (Skill) GetSkill(skill string) (model.Skill, error) {
 	if redisClient.Exists(ctx, "skill:"+skill).Val() == 0 {
 		return model.Skill{}, errors.New("el skill no existe")
 	}

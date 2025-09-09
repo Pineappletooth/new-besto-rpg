@@ -13,7 +13,7 @@ var com = command{
 	cooldownSeconds: 10,
 }
 
-func (s *CommandServer) Work(context context.Context, request *pb.WorkRequest) (*pb.WorkResponse, error) {
+func (s *commandServer) Work(context context.Context, request *pb.WorkRequest) (*pb.WorkResponse, error) {
 	err := com.validateAll(request.GetUserId())
 	if err != nil {
 		return nil, err
@@ -30,8 +30,8 @@ func (s *CommandServer) Work(context context.Context, request *pb.WorkRequest) (
 	if err != nil {
 		return nil, err
 	}
-	return pb.WorkResponse_builder{
+	return &pb.WorkResponse{
 		Amount:     proto.Int64(100),
 		NewBalance: proto.Int64(char.Inventory.Gold),
-	}.Build(), nil
+	}, nil
 }

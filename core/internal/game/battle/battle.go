@@ -1,6 +1,7 @@
 package battle
 
 import (
+	"fmt"
 	"pineappletooth/bestoRpg/internal/game/utils"
 	"slices"
 )
@@ -35,7 +36,11 @@ func (battle *Battle) GetSkill(name string) (*Skill, bool) {
 func (battle *Battle) Dmg(ctx dmgCtx) {
 	target := ctx.Target
 	if target == nil {
-		target = battle.getTarget(ctx.Emitter.Team)
+		var err error
+		target, err = battle.getTarget(ctx.Emitter.Team)
+		if err != nil {
+			fmt.Printf("no target %v", err)
+		}
 	}
 
 	//on before event
@@ -64,20 +69,24 @@ func (battle *Battle) RollDice(emitter *BattleEntity, dice []int) int {
 func (battle *Battle) getEnemies(team int) []*BattleEntity {
 	enemies := make([]*BattleEntity, 0, len(battle.entities)-1)
 	for i := range battle.entities {
-		if team != battle.entities[i].Team {
-			enemies = append(enemies, &battle.entities[i])
+		entity := &battle.entities[i]
+		if team != entity.Team || -1 == entity.Team {
+			enemies = append(enemies, entity)
 		}
 	}
 	return enemies
 }
 
-func (battle *Battle) getTarget(team int) *BattleEntity {
+func (battle *Battle) getTarget(team int) (*BattleEntity, error) {
 	enemies := battle.getEnemies(team)
+	if len(enemies) == 0 {
+		return nil, fmt.Errorf("no enemies")
+	}
 	slices.SortFunc(enemies, func(e, e2 *BattleEntity) int {
 		return e.Stats.Aggro - e2.Stats.Aggro
 	})
 	print(enemies)
-	return enemies[len(enemies)-1]
+	return enemies[len(enemies)-1], nil
 }
 
 func (battle *Battle) getEntityById(id string) (*BattleEntity, bool) {

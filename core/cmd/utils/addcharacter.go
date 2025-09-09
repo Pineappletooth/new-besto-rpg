@@ -7,7 +7,6 @@ import (
 
 func main() {
 	addChar()
-	addSkill()
 }
 
 func addChar() {
@@ -22,7 +21,7 @@ func addChar() {
 	}
 
 	err := persistence.AddCharacter(model.Character{
-		Id: "0",
+		Id: "1",
 		Inventory: model.Inventory{
 			Items: map[string]int{
 				"potion": 5,
@@ -46,7 +45,7 @@ func addSkill() {
 	battle:Dmg({Emitter=entity, Dmg=battle:RollDice(entity, {3})})
 end`,
 	}
-	err := persistence.AddSkill(skill)
+	err := persistence.Skill{}.AddSkill(skill)
 	if err != nil {
 		println(err.Error())
 	}

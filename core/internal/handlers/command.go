@@ -39,9 +39,9 @@ func (com command) validateCooldown(userId string) error {
 
 	if timeNow-last < com.cooldownSeconds {
 		st := status.New(codes.FailedPrecondition, "El comando esta en cooldown, quedan "+strconv.FormatInt(com.cooldownSeconds-(timeNow-last), 10)+" segundos")
-		st, err = st.WithDetails(pb.Error_builder{Details: map[string]string{
+		st, err = st.WithDetails(&pb.Error{Details: map[string]string{
 			"cooldown": strconv.FormatInt(com.cooldownSeconds-(timeNow-last), 10),
-		}}.Build())
+		}})
 		if err != nil {
 			return status.Errorf(codes.Internal, "Error al construir el mensaje de error: %v", err)
 		}

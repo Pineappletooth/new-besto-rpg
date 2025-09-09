@@ -29,6 +29,7 @@ func NewFromBaseEntity(base BaseEntity) BattleEntity {
 		ChosenSkills: make([]string, 0),
 		Events:       newEvents(),
 		Base:         base,
+		Team:         -1,
 	}
 }
 

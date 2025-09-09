@@ -1,6 +1,24 @@
 proto < ./commands.proto
 
+### Work
 GRPC localhost:8080/Commands/Work
 {
     "userId": "0"
+}
+
+### PvpBattle
+GRPC localhost:8080/Commands/PvpBattle
+
+{
+    "userId": "0",
+    "opponentId": "1"
+}
+
+### SelectSkill
+GRPC localhost:8080/Commands/SelectSkills
+
+{
+  "battleId": "40d4eba4-59d8-49cd-9c8e-d0e83edf470f",
+  "userId": "0",
+  "skills": ["attack"]
 }

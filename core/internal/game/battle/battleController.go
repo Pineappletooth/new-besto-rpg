@@ -1,18 +1,26 @@
 package battle
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"pineappletooth/bestoRpg/internal/model"
 )
 
-type skillPersistence interface {
+var BattlesStorage = make(map[string]*Battle)
+
+type SkillPersistence interface {
 	GetSkill(skill string) (model.Skill, error)
 }
-type battleController struct {
-	skillPersistence skillPersistence
+type BattlePersistence interface {
+	SaveBattle(battle *Battle) error
+	GetBattle(battleId string) (*Battle, error)
+}
+type Controller struct {
+	SkillPersistence  SkillPersistence
+	BattlePersistence BattlePersistence
 }
 
-func (controller battleController) processRound(battle *Battle) {
+func (controller Controller) processRound(battle *Battle) {
 	for i := range battle.entities {
 		entity := &battle.entities[i]
 		for _, skill := range entity.ChosenSkills {
@@ -22,60 +30,80 @@ func (controller battleController) processRound(battle *Battle) {
 	}
 }
 
-func NewBattle(controller battleController, entities []BattleEntity) *Battle {
+func NewBattle(controller Controller, entities []BattleEntity) (*Battle, error) {
 	skills := make(map[string]*Skill)
 	for i := range entities {
 		for _, skill := range entities[i].Base.Skills {
-			skills[skill] = controller.loadSkill(skill)
+			loadSkill, err := controller.loadSkill(skill)
+			if err != nil {
+				return nil, fmt.Errorf("battle could not load skills: %w", err)
+			}
+			skills[skill] = loadSkill
 		}
 	}
-	return &Battle{
+
+	battle := &Battle{
 		Id:       uuid.NewString(),
 		entities: entities,
 		skills:   skills,
 	}
-}
-
-func (controller battleController) loadSkill(skill string) *Skill {
-	skillModel, err := controller.skillPersistence.GetSkill(skill)
+	err := controller.BattlePersistence.SaveBattle(battle)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
-	return NewSkillFromModel(skillModel)
+
+	return battle, nil
 }
 
-func (controller battleController) selectSkill(battle *Battle, battleId string, skills []string) {
-	entity, ok := battle.getEntityById(battleId)
+func (controller Controller) loadSkill(skill string) (*Skill, error) {
+	skillModel, err := controller.SkillPersistence.GetSkill(skill)
+	if err != nil {
+		return nil, fmt.Errorf("skill %s not found: %w", skill, err)
+	}
+	return NewSkillFromModel(skillModel), nil
+}
+
+func (controller Controller) SelectSkill(battle *Battle, entityId string, skills []string) error {
+	entity, ok := battle.getEntityById(entityId)
 	if !ok {
-		return
+		return fmt.Errorf("battle entity not found")
 	}
 	for _, skill := range skills {
 		if _, ok := battle.GetSkill(skill); !ok {
-			return
+			return fmt.Errorf("skill not found")
 		}
 	}
 	entity.ChosenSkills = skills
-	controller.onSelectSkill(battle)
+	err := controller.onSelectSkill(battle)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (controller battleController) onSelectSkill(battle *Battle) {
+func (controller Controller) onSelectSkill(battle *Battle) error {
 	for i := range battle.entities {
 		entity := &battle.entities[i]
 		if !entity.isDead() && len(entity.ChosenSkills) == 0 {
-			return
+			return nil
 		}
 	}
+	err := controller.BattlePersistence.SaveBattle(battle)
+	if err != nil {
+		return err
+	}
 	controller.onRoundStart(battle)
+	return nil
 }
 
-func (controller battleController) onRoundStart(battle *Battle) {
+func (controller Controller) onRoundStart(battle *Battle) {
 	controller.processRound(battle)
 	if controller.checkEndBattle(battle) {
 		controller.end(battle)
 	}
 }
 
-func (controller battleController) checkEndBattle(battle *Battle) bool {
+func (controller Controller) checkEndBattle(battle *Battle) bool {
 	teams := make(map[int]bool)
 	deadTeams := make(map[int]bool)
 	for i := range battle.entities {
@@ -88,6 +116,6 @@ func (controller battleController) checkEndBattle(battle *Battle) bool {
 	return len(teams)-len(deadTeams) <= 1
 }
 
-func (controller battleController) end(battle *Battle) {
+func (controller Controller) end(battle *Battle) {
 	//
 }

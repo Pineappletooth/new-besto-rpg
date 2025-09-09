@@ -21,8 +21,8 @@ func TestFull(t *testing.T) {
 	//change this
 	attackSkill := "attack"
 	controller, battle := getTestBattle()
-	controller.selectSkill(battle, battle.entities[0].Id, []string{attackSkill, attackSkill})
-	controller.selectSkill(battle, battle.entities[1].Id, []string{attackSkill})
+	controller.SelectSkill(battle, battle.entities[0].Id, []string{attackSkill, attackSkill})
+	controller.SelectSkill(battle, battle.entities[1].Id, []string{attackSkill})
 
 	if battle.entities[0].Stats.HP != 7 {
 		t.Error("Expected entity 1 to have 7 HP, has", battle.entities[0].Stats.HP)
