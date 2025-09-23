@@ -11,15 +11,21 @@ var BattlesStorage = make(map[string]*Battle)
 type SkillPersistence interface {
 	GetSkill(skill string) (model.Skill, error)
 }
-type BattlePersistence interface {
+type Persistence interface {
 	SaveBattle(battle *Battle) error
 	GetBattle(battleId string) (*Battle, error)
 }
 type Controller struct {
 	SkillPersistence  SkillPersistence
-	BattlePersistence BattlePersistence
+	BattlePersistence Persistence
 }
 
+func NewController(skillPersistence SkillPersistence, battlePersistence Persistence) Controller {
+	return Controller{
+		SkillPersistence:  skillPersistence,
+		BattlePersistence: battlePersistence,
+	}
+}
 func (controller Controller) processRound(battle *Battle) {
 	for i := range battle.entities {
 		entity := &battle.entities[i]

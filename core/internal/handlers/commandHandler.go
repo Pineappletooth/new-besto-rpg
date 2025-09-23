@@ -8,10 +8,10 @@ import (
 type commandServer struct {
 	pb.UnimplementedCommandsServer
 	SkillPersistence  battle.SkillPersistence
-	BattlePersistence battle.BattlePersistence
+	BattlePersistence battle.Persistence
 }
 
-func NewCommandServer(skillPersistence battle.SkillPersistence, battlePersistence battle.BattlePersistence) pb.CommandsServer {
+func NewCommandServer(skillPersistence battle.SkillPersistence, battlePersistence battle.Persistence) pb.CommandsServer {
 	return &commandServer{
 		SkillPersistence:  skillPersistence,
 		BattlePersistence: battlePersistence,

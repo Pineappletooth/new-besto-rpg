@@ -7,6 +7,7 @@ import (
 )
 
 type OnUseSkill func(battle *Battle, self *BattleEntity)
+type OnApplySkill func(battle *Battle, self *BattleEntity)
 type Skill struct {
 	name  string
 	OnUse OnUseSkill
@@ -16,7 +17,8 @@ func NewSkillFromModel(dto model.Skill) *Skill {
 	L := lua.NewState()
 	defer L.Close()
 	skill := &Skill{
-		name: dto.Name,
+		name:  dto.Name,
+		OnUse: nil,
 	}
 	L.SetGlobal("skill", luar.New(L, skill))
 	if err := L.DoString(dto.Action); err != nil {
@@ -29,7 +31,7 @@ func NewSkillFromModel(dto model.Skill) *Skill {
 }
 
 type Status struct {
-	name     string
-	priority int
-	//effect   *Effect[Context]
+	Name     string
+	Duration int
+	OnApply  OnApplySkill
 }

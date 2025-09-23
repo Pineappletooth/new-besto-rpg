@@ -18,6 +18,10 @@ type dmgCtx struct {
 	Dmg     int
 }
 
+func (battle *Battle) ApplyEffect(name string, selfEntity *BattleEntity) {
+
+}
+
 func (battle *Battle) UseSkill(name string, selfEntity *BattleEntity) {
 	skill, ok := battle.GetSkill(name)
 	if !ok {
