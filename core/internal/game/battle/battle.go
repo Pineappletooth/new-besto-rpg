@@ -10,6 +10,7 @@ type Battle struct {
 	Id       string
 	entities []BattleEntity
 	skills   map[string]*Skill
+	status   map[string]*Status
 }
 
 type dmgCtx struct {
@@ -18,8 +19,30 @@ type dmgCtx struct {
 	Dmg     int
 }
 
-func (battle *Battle) ApplyEffect(name string, selfEntity *BattleEntity) {
+type statusCtx struct {
+	Emitter *BattleEntity
+	Target  *BattleEntity
+	Status  string
+	Turns   int
+}
 
+func (battle *Battle) ApplyStatus(ctx statusCtx) {
+	target := ctx.Target
+	if target == nil {
+		var err error
+		target, err = battle.getTarget(ctx.Emitter.Team)
+		if err != nil {
+			fmt.Printf("no target %v", err)
+			return
+		}
+	}
+	//TODO: Lazy load status
+	status, ok := battle.GetStatus(ctx.Status, ctx.Turns)
+	if !ok {
+		return
+	}
+	status.Duration =
+		target.Status
 }
 
 func (battle *Battle) UseSkill(name string, selfEntity *BattleEntity) {
@@ -37,6 +60,14 @@ func (battle *Battle) GetSkill(name string) (*Skill, bool) {
 	return skill, ok
 }
 
+func (battle *Battle) GetStatus(name string, duration int) (*Status, bool) {
+	status, ok := battle.status[name]
+	if ok {
+		status.Duration = duration
+	}
+	return status, ok
+}
+
 func (battle *Battle) Dmg(ctx dmgCtx) {
 	target := ctx.Target
 	if target == nil {
@@ -44,6 +75,7 @@ func (battle *Battle) Dmg(ctx dmgCtx) {
 		target, err = battle.getTarget(ctx.Emitter.Team)
 		if err != nil {
 			fmt.Printf("no target %v", err)
+			return
 		}
 	}
 
