@@ -31,7 +31,6 @@ func NewSkillFromModel(dto model.Skill) *Skill {
 }
 
 type Status struct {
-	Name     string
-	Duration int
-	OnApply  OnApplySkill
+	Name    string
+	OnApply OnApplySkill
 }

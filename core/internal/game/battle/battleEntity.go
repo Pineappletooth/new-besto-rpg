@@ -11,10 +11,15 @@ type BaseEntity struct {
 	Stats  model.Stats
 	Skills []string
 }
+
+type BattleStatus struct {
+	Status
+	Duration int
+}
 type BattleEntity struct {
 	Id           string
 	Stats        model.Stats
-	Status       []Status
+	Status       []BattleStatus
 	ChosenSkills []string
 	Events       Events
 	Team         int
@@ -25,7 +30,7 @@ func NewFromBaseEntity(base BaseEntity) BattleEntity {
 	return BattleEntity{
 		Id:           base.Id,
 		Stats:        base.Stats,
-		Status:       make([]Status, 0),
+		Status:       make([]BattleStatus, 0),
 		ChosenSkills: make([]string, 0),
 		Events:       newEvents(),
 		Base:         base,
@@ -35,6 +40,10 @@ func NewFromBaseEntity(base BaseEntity) BattleEntity {
 
 func (b *BattleEntity) isDead() bool {
 	return b.Stats.HP <= 0
+}
+
+func (b *BattleEntity) clearEvents() {
+	b.Events = newEvents()
 }
 
 func NewBattleEntityTest() BattleEntity {

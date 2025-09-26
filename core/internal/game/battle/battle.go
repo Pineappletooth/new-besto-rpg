@@ -37,12 +37,15 @@ func (battle *Battle) ApplyStatus(ctx statusCtx) {
 		}
 	}
 	//TODO: Lazy load status
-	status, ok := battle.GetStatus(ctx.Status, ctx.Turns)
+	status, ok := battle.GetStatus(ctx.Status)
 	if !ok {
 		return
 	}
-	status.Duration =
-		target.Status
+
+	target.Status = append(target.Status, BattleStatus{
+		Status:   *status,
+		Duration: ctx.Turns,
+	})
 }
 
 func (battle *Battle) UseSkill(name string, selfEntity *BattleEntity) {
@@ -60,11 +63,8 @@ func (battle *Battle) GetSkill(name string) (*Skill, bool) {
 	return skill, ok
 }
 
-func (battle *Battle) GetStatus(name string, duration int) (*Status, bool) {
+func (battle *Battle) GetStatus(name string) (*Status, bool) {
 	status, ok := battle.status[name]
-	if ok {
-		status.Duration = duration
-	}
 	return status, ok
 }
 

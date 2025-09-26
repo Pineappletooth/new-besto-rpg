@@ -103,9 +103,36 @@ func (controller Controller) onSelectSkill(battle *Battle) error {
 }
 
 func (controller Controller) onRoundStart(battle *Battle) {
+	//TODO: USE Events to decouple logic
+	handleEffects(battle)
 	controller.processRound(battle)
+	endRound(battle)
 	if controller.checkEndBattle(battle) {
 		controller.end(battle)
+	}
+}
+
+func handleEffects(battle *Battle) {
+	for i := range battle.entities {
+		battle.entities[i].clearEvents()
+	}
+	for i := range battle.entities {
+		entity := &battle.entities[i]
+		for j := range entity.Status {
+			entity.Status[j].OnApply(battle, entity)
+		}
+	}
+
+}
+
+func endRound(battle *Battle) {
+	for i := range battle.entities {
+		for j := range battle.entities[i].Status {
+			battle.entities[i].Status[j].Duration--
+			if battle.entities[i].Status[j].Duration <= 0 {
+				battle.entities[i].Status = append(battle.entities[i].Status[:j], battle.entities[i].Status[j+1:]...)
+			}
+		}
 	}
 }
 
