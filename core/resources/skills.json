@@ -1,0 +1,10 @@
+[{
+  "name": "attack",
+  "description": "attack",
+  "action": "skill.OnUse = function (battle, entity) battle:Dmg({Emitter=entity, Dmg=battle:RollDice(entity, {3})}) end"
+},
+  {
+    "name": "defense",
+    "description": "defense",
+    "action": "skill.OnUse = function (battle, entity) battle:ApplyStatus({Emitter=entity, Status='shield', Turns=3}) end"
+  }]

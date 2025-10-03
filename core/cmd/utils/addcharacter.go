@@ -40,7 +40,8 @@ func addChar() {
 
 func addSkill() {
 	skill := model.Skill{
-		Name: "attack",
+		Name:        "attack",
+		Description: "attack",
 		Action: `skill.OnUse = function (battle, entity)
 	battle:Dmg({Emitter=entity, Dmg=battle:RollDice(entity, {3})})
 end`,

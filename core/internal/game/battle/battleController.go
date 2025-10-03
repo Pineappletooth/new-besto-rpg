@@ -2,14 +2,16 @@ package battle
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"pineappletooth/bestoRpg/internal/model"
-)
 
-var BattlesStorage = make(map[string]*Battle)
+	"github.com/google/uuid"
+)
 
 type SkillPersistence interface {
 	GetSkill(skill string) (model.Skill, error)
+}
+type StatusPersistence interface {
+	GetStatus(status string) (model.Status, error)
 }
 type Persistence interface {
 	SaveBattle(battle *Battle) error
@@ -17,18 +19,20 @@ type Persistence interface {
 }
 type Controller struct {
 	SkillPersistence  SkillPersistence
+	StatusPersistence StatusPersistence
 	BattlePersistence Persistence
 }
 
-func NewController(skillPersistence SkillPersistence, battlePersistence Persistence) Controller {
+func NewController(skillPersistence SkillPersistence, statusPersistence StatusPersistence, battlePersistence Persistence) Controller {
 	return Controller{
 		SkillPersistence:  skillPersistence,
+		StatusPersistence: statusPersistence,
 		BattlePersistence: battlePersistence,
 	}
 }
 func (controller Controller) processRound(battle *Battle) {
 	for i := range battle.entities {
-		entity := &battle.entities[i]
+		entity := battle.entities[i]
 		for _, skill := range entity.ChosenSkills {
 			battle.UseSkill(skill, entity)
 		}
@@ -36,7 +40,7 @@ func (controller Controller) processRound(battle *Battle) {
 	}
 }
 
-func NewBattle(controller Controller, entities []BattleEntity) (*Battle, error) {
+func NewBattle(controller Controller, entities []*BattleEntity) (*Battle, error) {
 	skills := make(map[string]*Skill)
 	for i := range entities {
 		for _, skill := range entities[i].Base.Skills {
@@ -48,10 +52,13 @@ func NewBattle(controller Controller, entities []BattleEntity) (*Battle, error) 
 		}
 	}
 
+	status := make(map[string]*Status)
+
 	battle := &Battle{
 		Id:       uuid.NewString(),
 		entities: entities,
 		skills:   skills,
+		status:   status,
 	}
 	err := controller.BattlePersistence.SaveBattle(battle)
 	if err != nil {
@@ -67,6 +74,14 @@ func (controller Controller) loadSkill(skill string) (*Skill, error) {
 		return nil, fmt.Errorf("skill %s not found: %w", skill, err)
 	}
 	return NewSkillFromModel(skillModel), nil
+}
+
+func (controller Controller) loadStatus(status string) (*Status, error) {
+	statusModel, err := controller.StatusPersistence.GetStatus(status)
+	if err != nil {
+		return nil, fmt.Errorf("status %s not found: %w", status, err)
+	}
+	return NewStatusFromModel(statusModel), nil
 }
 
 func (controller Controller) SelectSkill(battle *Battle, entityId string, skills []string) error {
@@ -89,7 +104,7 @@ func (controller Controller) SelectSkill(battle *Battle, entityId string, skills
 
 func (controller Controller) onSelectSkill(battle *Battle) error {
 	for i := range battle.entities {
-		entity := &battle.entities[i]
+		entity := battle.entities[i]
 		if !entity.isDead() && len(entity.ChosenSkills) == 0 {
 			return nil
 		}
@@ -104,7 +119,7 @@ func (controller Controller) onSelectSkill(battle *Battle) error {
 
 func (controller Controller) onRoundStart(battle *Battle) {
 	//TODO: USE Events to decouple logic
-	handleEffects(battle)
+	controller.handleEffects(battle)
 	controller.processRound(battle)
 	endRound(battle)
 	if controller.checkEndBattle(battle) {
@@ -112,14 +127,23 @@ func (controller Controller) onRoundStart(battle *Battle) {
 	}
 }
 
-func handleEffects(battle *Battle) {
+// TODO: fix statuses to apply this round
+func (controller Controller) handleEffects(battle *Battle) {
 	for i := range battle.entities {
 		battle.entities[i].clearEvents()
 	}
 	for i := range battle.entities {
-		entity := &battle.entities[i]
+		entity := battle.entities[i]
 		for j := range entity.Status {
-			entity.Status[j].OnApply(battle, entity)
+			status := entity.Status[j]
+			if status.OnApply == nil {
+				persistedStatus, err := controller.loadStatus(status.Name)
+				if err != nil || persistedStatus.OnApply == nil {
+					return
+				}
+				status.Status = *persistedStatus
+			}
+			status.OnApply(battle, entity)
 		}
 	}
 

@@ -53,12 +53,15 @@ func NewBattleEntityTest() BattleEntity {
 			HP:    10,
 			Aggro: 1,
 		},
-		Skills: []string{"attack"},
+		Skills: []string{"attack", "defense"},
 	})
 }
 
 func NewBattleEntityFromCharacter(c model.Character) BattleEntity {
-	stats := model.Stats{}
+	stats := model.Stats{
+		HP:    10,
+		Aggro: 1,
+	}
 	skills := make([]string, 0)
 
 	for _, item := range c.Equipment.Items {

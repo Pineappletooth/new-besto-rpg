@@ -1,0 +1,5 @@
+[{
+  "name": "shield",
+  "description": "shield",
+  "Action": "status.OnApply = function (battle, entity) entity.events.OnBeforeDmg.Subscribe(function (before, after) after.Dmg = 0 return after end) end"
+}]

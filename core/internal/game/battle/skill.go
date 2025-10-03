@@ -1,9 +1,10 @@
 package battle
 
 import (
+	"pineappletooth/bestoRpg/internal/model"
+
 	lua "github.com/yuin/gopher-lua"
 	luar "layeh.com/gopher-luar"
-	"pineappletooth/bestoRpg/internal/model"
 )
 
 type OnUseSkill func(battle *Battle, self *BattleEntity)
@@ -33,4 +34,21 @@ func NewSkillFromModel(dto model.Skill) *Skill {
 type Status struct {
 	Name    string
 	OnApply OnApplySkill
+}
+
+func NewStatusFromModel(dto model.Status) *Status {
+	L := lua.NewState()
+	defer L.Close()
+	status := &Status{
+		Name:    dto.Name,
+		OnApply: nil,
+	}
+	L.SetGlobal("status", luar.New(L, status))
+	if err := L.DoString(dto.Action); err != nil {
+		panic(err)
+	}
+	if status.OnApply == nil {
+		panic("no OnApply")
+	}
+	return status
 }

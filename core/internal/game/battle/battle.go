@@ -8,7 +8,7 @@ import (
 
 type Battle struct {
 	Id       string
-	entities []BattleEntity
+	entities []*BattleEntity
 	skills   map[string]*Skill
 	status   map[string]*Status
 }
@@ -27,6 +27,17 @@ type statusCtx struct {
 }
 
 func (battle *Battle) ApplyStatus(ctx statusCtx) {
+	if ctx.Emitter == nil {
+		fmt.Println("Must send emitter")
+		return
+	}
+	if ctx.Turns == 0 {
+		fmt.Println("Must send turns")
+	}
+	if ctx.Status == "" {
+		fmt.Println("Must send status")
+	}
+
 	target := ctx.Target
 	if target == nil {
 		var err error
@@ -37,10 +48,7 @@ func (battle *Battle) ApplyStatus(ctx statusCtx) {
 		}
 	}
 	//TODO: Lazy load status
-	status, ok := battle.GetStatus(ctx.Status)
-	if !ok {
-		return
-	}
+	status := battle.GetStatus(ctx.Status)
 
 	target.Status = append(target.Status, BattleStatus{
 		Status:   *status,
@@ -63,12 +71,28 @@ func (battle *Battle) GetSkill(name string) (*Skill, bool) {
 	return skill, ok
 }
 
-func (battle *Battle) GetStatus(name string) (*Status, bool) {
+func (battle *Battle) GetStatus(name string) *Status {
 	status, ok := battle.status[name]
-	return status, ok
+	if !ok {
+		battle.status[name] = &Status{
+			Name:    name,
+			OnApply: nil,
+		}
+		return battle.status[name]
+	}
+	return status
 }
 
 func (battle *Battle) Dmg(ctx dmgCtx) {
+	if ctx.Emitter == nil {
+		fmt.Println("Must send emitter")
+		return
+	}
+	if ctx.Dmg == 0 {
+		fmt.Println("Must send dmg")
+		return
+	}
+
 	target := ctx.Target
 	if target == nil {
 		var err error
@@ -79,7 +103,14 @@ func (battle *Battle) Dmg(ctx dmgCtx) {
 		}
 	}
 
-	//on before event
+	res := target.Events.OnBeforeDmg.Emit(OnBeforeDmgContext{
+		Emitter: ctx.Emitter,
+		Target:  target,
+		Dmg:     ctx.Dmg,
+	})
+	ctx.Emitter = res.Emitter
+	ctx.Target = res.Target
+	ctx.Dmg = res.Dmg
 
 	target.Stats.HP = target.Stats.HP - ctx.Dmg
 
@@ -88,13 +119,13 @@ func (battle *Battle) Dmg(ctx dmgCtx) {
 
 func (battle *Battle) RollDice(emitter *BattleEntity, dice []int) int {
 
-	before := emitter.Events.onBeforeRollDice.Emit(onBeforeRollDiceContext{
+	before := emitter.Events.OnBeforeRollDice.Emit(OnBeforeRollDiceContext{
 		dice,
 	})
 
 	result := utils.RollDice(before.Dice)
 
-	after := emitter.Events.onAfterRollDice.Emit(onAfterRollDiceContext{
+	after := emitter.Events.OnAfterRollDice.Emit(OnAfterRollDiceContext{
 		dice,
 		result,
 	})
@@ -105,7 +136,7 @@ func (battle *Battle) RollDice(emitter *BattleEntity, dice []int) int {
 func (battle *Battle) getEnemies(team int) []*BattleEntity {
 	enemies := make([]*BattleEntity, 0, len(battle.entities)-1)
 	for i := range battle.entities {
-		entity := &battle.entities[i]
+		entity := battle.entities[i]
 		if team != entity.Team || -1 == entity.Team {
 			enemies = append(enemies, entity)
 		}
@@ -128,7 +159,7 @@ func (battle *Battle) getTarget(team int) (*BattleEntity, error) {
 func (battle *Battle) getEntityById(id string) (*BattleEntity, bool) {
 	for i := range battle.entities {
 		if battle.entities[i].Id == id {
-			return &battle.entities[i], true
+			return battle.entities[i], true
 		}
 	}
 	return nil, false

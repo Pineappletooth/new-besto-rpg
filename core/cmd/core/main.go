@@ -22,7 +22,7 @@ func main() {
 	s := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(recovery.UnaryServerInterceptor()),
 	)
-	pb.RegisterCommandsServer(s, handlers.NewCommandServer(persistence.Skill{}, battle.MockPersistence{}))
+	pb.RegisterCommandsServer(s, handlers.NewCommandServer(persistence.Skill{}, persistence.Status{}, battle.MockPersistence{}))
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

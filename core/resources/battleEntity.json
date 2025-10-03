@@ -1,0 +1,8 @@
+[{
+  "id": "0",
+  "stats": {
+    "hp":    10,
+    "aggro": 1
+  },
+  "skills": ["attack"]
+}]

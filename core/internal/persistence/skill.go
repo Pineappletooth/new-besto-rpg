@@ -21,7 +21,7 @@ func (Skill) GetSkill(skill string) (model.Skill, error) {
 	if res.Err() != nil {
 		return model.Skill{}, res.Err()
 	}
-	var character model.Skill
-	err := json.Unmarshal([]byte(res.Val()), &character)
-	return character, err
+	var skillModel model.Skill
+	err := json.Unmarshal([]byte(res.Val()), &skillModel)
+	return skillModel, err
 }

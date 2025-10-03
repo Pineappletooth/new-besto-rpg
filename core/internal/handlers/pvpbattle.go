@@ -28,7 +28,7 @@ func (s *commandServer) PvpBattle(context context.Context, request *pb.PvpBattle
 		return nil, err
 	}
 
-	controller := battle.NewController(s.SkillPersistence, s.BattlePersistence)
+	controller := battle.NewController(s.SkillPersistence, s.StatusPersistence, s.BattlePersistence)
 
 	entity := battle.NewBattleEntityFromCharacter(char)
 	entity2 := battle.NewBattleEntityFromCharacter(char2)

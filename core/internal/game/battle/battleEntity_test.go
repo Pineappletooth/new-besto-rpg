@@ -7,22 +7,22 @@ import (
 func TestSimulationWithEvents(t *testing.T) {
 	controller, battle := getTestBattle()
 
-	name := "attack"
+	attack := "attack"
 	entity1 := battle.entities[0]
 	entity2 := battle.entities[1]
 
-	entity1.Events.onBeforeRollDice.Subscribe(func(before onBeforeRollDiceContext, after onBeforeRollDiceContext) onBeforeRollDiceContext {
+	entity1.Events.OnBeforeRollDice.Subscribe(func(before OnBeforeRollDiceContext, after OnBeforeRollDiceContext) OnBeforeRollDiceContext {
 		after.Dice = []int{1}
 		return after
 	})
 
-	entity2.Events.onAfterRollDice.Subscribe(func(before onAfterRollDiceContext, after onAfterRollDiceContext) onAfterRollDiceContext {
+	entity2.Events.OnAfterRollDice.Subscribe(func(before OnAfterRollDiceContext, after OnAfterRollDiceContext) OnAfterRollDiceContext {
 		after.Result = before.Result + 1
 		return after
 	})
 
-	entity1.ChosenSkills = append(entity1.ChosenSkills, name, name)
-	entity2.ChosenSkills = append(entity2.ChosenSkills, name)
+	entity1.ChosenSkills = append(entity1.ChosenSkills, attack, attack)
+	entity2.ChosenSkills = append(entity2.ChosenSkills, attack)
 
 	controller.processRound(battle)
 

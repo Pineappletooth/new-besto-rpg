@@ -11,9 +11,8 @@ import (
 var redisClient = getClient()
 var ctx = context.Background()
 
-
 func getClient() *redis.Client {
-	url :=  os.Getenv("REDIS_URL")
+	url := os.Getenv("REDIS_URL")
 	opts, err := redis.ParseURL(url)
 	if err != nil {
 		panic(err)
